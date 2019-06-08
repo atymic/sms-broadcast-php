@@ -20,7 +20,7 @@ $client = \Atymic\SmsBroadcast\Factory\ClientFactory::create(
 
 try {
     $response = $client->send('0487654321', 'This is an sms message');
-} catch (\Atymic\BroadcastSms\Exception\SmsBroadcastException $e) {
+} catch (\Atymic\SmsBroadcast\Exception\SmsBroadcastException $e) {
     echo 'Failed to send with error: ' . $e->getMessage();
 }
 

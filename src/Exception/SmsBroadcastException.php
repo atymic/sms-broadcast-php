@@ -1,6 +1,6 @@
 <?php
 
-namespace Atymic\BroadcastSms\Exception;
+namespace Atymic\SmsBroadcast\Exception;
 
 class SmsBroadcastException extends \Exception
 {

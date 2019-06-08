@@ -2,11 +2,12 @@
 
 namespace Atymic\SmsBroadcast\Api;
 
-use Atymic\BroadcastSms\Exception\InvalidMessageException;
-use Atymic\BroadcastSms\Exception\InvalidNumberException;
-use Atymic\BroadcastSms\Exception\InvalidSenderException;
-use Atymic\BroadcastSms\Exception\SendException;
+use Atymic\SmsBroadcast\Exception\InvalidMessageException;
+use Atymic\SmsBroadcast\Exception\InvalidNumberException;
+use Atymic\SmsBroadcast\Exception\InvalidSenderException;
+use Atymic\SmsBroadcast\Exception\SendException;
 use GuzzleHttp\Exception\RequestException;
+use function GuzzleHttp\Psr7\str;
 use GuzzleHttp\RequestOptions;
 
 class Client
@@ -112,7 +113,7 @@ class Client
 
         $maxLength = $request['maxsplit'] ? self::MESSAGE_MAX_LENGTH_SPLIT : self::MESSAGE_MAX_LENGTH_STANDARD;
 
-        if (mb_strlen($request['message']) > $maxLength) {
+        if (strlen($request['message']) > $maxLength) {
             throw new InvalidMessageException('Message is over maximum length of %s', $maxLength);
         }
     }
