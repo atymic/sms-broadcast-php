@@ -1,4 +1,5 @@
 # SmsBroadcast PHP API Client
+[![Build Status](https://travis-ci.org/atymic/sms-broadcast-php.svg?branch=master)](https://travis-ci.org/atymic/sms-broadcast-php) [![Latest Stable Version](https://poser.pugx.org/atymic/sms-broadcast/v/stable)](https://packagist.org/packages/atymic/sms-broadcast) [![License](https://poser.pugx.org/atymic/sms-broadcast/license)](https://packagist.org/packages/atymic/sms-broadcast)
 
 This is a simple API client for [SMS Broadcast](https://www.smsbroadcast.com.au/).
 
