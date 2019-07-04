@@ -1,6 +1,7 @@
 # SmsBroadcast PHP API Client
 
 This is a simple API client for [SMS Broadcast](https://www.smsbroadcast.com.au/).
+
 You can view their API documentation [here](https://www.smsbroadcast.com.au/Advanced%20HTTP%20API.pdf).
 
 ## Install
@@ -8,6 +9,7 @@ You can view their API documentation [here](https://www.smsbroadcast.com.au/Adva
 ```bash
 composer require atymic/sms-broadcast
 ```
+
 
 ## Usage
 
@@ -25,10 +27,18 @@ try {
 }
 
 echo 'SMS sent, ref: ' . $response->getSmsRef();
-
 ```
 
 ## Todo
 
-- Tests
+## Tests
+By default only unit tests will run. If you want to run the integration tests, copy the `phpunit.dist.xml` file to `phpunit.xml` and supply your SMS Broadcast credentials & to number in the file.
+
+WARNING - Integration tests will send real SMS messages, so make sure not to run them in CI.
+
+```bash
+composer test
+```
+
+# Todo
 - Support for incoming message webhooks

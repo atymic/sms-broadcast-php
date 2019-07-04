@@ -10,9 +10,23 @@
         }
     ],
     "require": {
+        "php": "^7.2",
         "guzzlehttp/guzzle": "^6.3"
     },
     "autoload": {
         "psr-4": {"Atymic\\SmsBroadcast\\": "src/"}
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Atymic\\SmsBroadcast\\Tests\\Unit\\": "tests/unit",
+            "Atymic\\SmsBroadcast\\Tests\\Integration\\": "tests/integration"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8",
+        "blastcloud/guzzler": "^1.5"
+    },
+    "scripts": {
+        "test": "mkdir -p .cache && phpunit --cache-result-file=.cache/phpunit"
     }
 }

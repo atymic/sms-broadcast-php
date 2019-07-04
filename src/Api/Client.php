@@ -12,6 +12,10 @@ use GuzzleHttp\RequestOptions;
 
 class Client
 {
+    /**
+     * @see https://www.smsbroadcast.com.au/Advanced%20HTTP%20API.pdf
+     * @var string
+     */
     const API_ENDPOINT = 'https://api.smsbroadcast.com.au/api-adv.php';
 
     /**
@@ -21,7 +25,6 @@ class Client
     const VALID_NUMBER_REGEX = '/^(?:614|04|4)[\d]{8}$/';
 
     /**
-     * @see https://www.smsbroadcast.com.au/Advanced%20HTTP%20API.pdf
      * @var string
      */
     const VALID_SENDER_REGEX = '/^\S{1,11}$/';
@@ -41,9 +44,9 @@ class Client
 
     /**
      * @param \GuzzleHttp\Client $client
-     * @param string $username
-     * @param string $password
-     * @param string|null $sender
+     * @param string             $username
+     * @param string             $password
+     * @param string|null        $sender
      */
     public function __construct(\GuzzleHttp\Client $client, string $username, string $password, ?string $sender = null)
     {
@@ -64,10 +67,10 @@ class Client
         $request = [
             'username' => $this->username,
             'password' => $this->password,
-            'to' => $to,
-            'from' => $sender ?? $this->sender,
-            'message' => $message,
-            'ref' => $ref,
+            'to'       => $to,
+            'from'     => $sender ?? $this->sender,
+            'message'  => $message,
+            'ref'      => $ref,
         ];
 
         if ($split) {
@@ -85,14 +88,14 @@ class Client
                 RequestOptions::QUERY => $request,
             ]);
         } catch (RequestException $exception) {
-            throw new SendException(sprintf('Failed to send SMS: %s', (string)$exception));
+            throw new SendException(sprintf('Failed to send SMS: %s', (string) $exception));
         }
 
-        $sendResponse = SendResponse::fromResponse((string)$response->getBody());
+        $sendResponse = SendResponse::fromResponse((string) $response->getBody());
 
         if ($sendResponse->hasError()) {
             throw new SendException(sprintf(
-                    'Failed to send message to `%s` with error %s',
+                    'Failed to send message to `%s` with error `%s`',
                     $sendResponse->getTo(),
                     $sendResponse->getError())
             );
@@ -104,17 +107,25 @@ class Client
     private function validateSendRequest(array $request)
     {
         if (!preg_match(self::VALID_SENDER_REGEX, $request['from'])) {
-            throw new InvalidSenderException('Message sender %s is invalid', $request['from']);
+            throw new InvalidSenderException(sprintf('Message sender `%s` is invalid', $request['from']));
         }
 
         if (!preg_match(self::VALID_NUMBER_REGEX, $request['to'])) {
-            throw new InvalidNumberException('Message to number %s is invalid', $request['to']);
+            throw new InvalidNumberException(sprintf('Message to number `%s` is invalid', $request['to']));
         }
 
         $maxLength = $request['maxsplit'] ? self::MESSAGE_MAX_LENGTH_SPLIT : self::MESSAGE_MAX_LENGTH_STANDARD;
 
+        if (strlen($request['message']) === 0) {
+            throw new InvalidMessageException('Message is empty');
+        }
+
         if (strlen($request['message']) > $maxLength) {
-            throw new InvalidMessageException('Message is over maximum length of %s', $maxLength);
+            throw new InvalidMessageException(sprintf(
+                'Message length `%s` of chars is over maximum length of `%s` chars',
+                strlen($request['message']),
+                $maxLength
+            ));
         }
     }
 }
