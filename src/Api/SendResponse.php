@@ -19,7 +19,7 @@ class SendResponse
     private $error = null;
 
     /**
-     * @param string $code
+     * @param string      $code
      * @param string|null $to
      * @param string|null $smsRef
      * @param string|null $error
