@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Atymic\SmsBroadcast\Tests\Unit\Api;
 
 use Atymic\SmsBroadcast\Api\Client;
+use Atymic\SmsBroadcast\Api\SendResponse;
 use Atymic\SmsBroadcast\Exception\InvalidMessageException;
 use Atymic\SmsBroadcast\Exception\InvalidNumberException;
 use Atymic\SmsBroadcast\Exception\InvalidSenderException;
@@ -128,5 +129,32 @@ class ClientTest extends TestCase
         $this->expectExceptionMessage('Failed to send message to `0412345678` with error `Invalid Number`');
 
         $this->client->send('0412345678', 'test message', null, 'ref234');
+    }
+
+    public function testSendMultiple()
+    {
+        $this->guzzler->expects($this->once())
+            ->get(Client::API_ENDPOINT)
+            ->withQuery([
+                'username' => 'user',
+                'password' => 'password',
+                'to' => '0412345678,0413345678,0414345678',
+                'from' => '0412345678',
+                'message' => 'test message',
+                'maxsplit' => 5,
+            ], true)
+            ->willRespond(new Response(200, [], "OK: 0412345678:abcd1\nOK: 0413345678:abcd2\nOK: 0414345678:abcd3\n"));
+
+        $results = $this->client->sendMany(
+            [
+                '0412345678',
+                '0413345678',
+                '0414345678',
+            ],
+            'test message'
+        );
+
+        $this->assertContainsOnlyInstancesOf(SendResponse::class, $results);
+        $this->assertCount(3, $results);
     }
 }

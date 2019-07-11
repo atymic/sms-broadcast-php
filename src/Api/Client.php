@@ -7,7 +7,6 @@ use Atymic\SmsBroadcast\Exception\InvalidNumberException;
 use Atymic\SmsBroadcast\Exception\InvalidSenderException;
 use Atymic\SmsBroadcast\Exception\SendException;
 use GuzzleHttp\Exception\RequestException;
-use function GuzzleHttp\Psr7\str;
 use GuzzleHttp\RequestOptions;
 
 class Client
@@ -17,21 +16,6 @@ class Client
      * @var string
      */
     const API_ENDPOINT = 'https://api.smsbroadcast.com.au/api-adv.php';
-
-    /**
-     * SMS Broadcast supports only australian mobile phone numbers
-     * @var string
-     */
-    const VALID_NUMBER_REGEX = '/^(?:614|04|4)[\d]{8}$/';
-
-    /**
-     * @var string
-     */
-    const VALID_SENDER_REGEX = '/^\S{1,11}$/';
-
-    const MESSAGE_MAX_LENGTH_STANDARD = 160;
-    const MESSAGE_MAX_SPLIT = 5;
-    const MESSAGE_MAX_LENGTH_SPLIT = 765;
 
     /** @var \GuzzleHttp\Client */
     private $client;
@@ -56,6 +40,62 @@ class Client
         $this->sender = $sender;
     }
 
+    /**
+     * @param array       $to
+     * @param string      $message
+     * @param string|null $sender
+     * @param string|null $ref
+     * @param bool        $split
+     * @param int|null    $delay
+     *
+     * @return SendResponse[]
+     *
+     * @throws InvalidMessageException
+     * @throws InvalidNumberException
+     * @throws InvalidSenderException
+     * @throws SendException
+     */
+    public function sendMany(
+        array $to,
+        string $message,
+        ?string $sender = null,
+        ?string $ref = null,
+        bool $split = true,
+        ?int $delay = null
+    ): array {
+        $sendRequest = new SendRequest($to, $message, $sender ?? $this->sender, $ref, $split, $delay);
+
+        $sendRequest->validate();
+
+        try {
+            $response = $this->client->get(self::API_ENDPOINT, [
+                RequestOptions::QUERY => array_merge(
+                    $sendRequest->toRequest(),
+                    ['username' => $this->username, 'password' => $this->password]
+                ),
+            ]);
+        } catch (RequestException $exception) {
+            throw new SendException(sprintf('Failed to send SMS: %s', (string) $exception));
+        }
+
+        return SendResponse::fromResponse((string) $response->getBody());
+    }
+
+    /**
+     * @param string      $to
+     * @param string      $message
+     * @param string|null $sender
+     * @param string|null $ref
+     * @param bool        $split
+     * @param int|null    $delay
+     *
+     * @return SendResponse
+     *
+     * @throws InvalidMessageException
+     * @throws InvalidNumberException
+     * @throws InvalidSenderException
+     * @throws SendException
+     */
     public function send(
         string $to,
         string $message,
@@ -64,68 +104,23 @@ class Client
         bool $split = true,
         ?int $delay = null
     ): SendResponse {
-        $request = [
-            'username' => $this->username,
-            'password' => $this->password,
-            'to'       => $to,
-            'from'     => $sender ?? $this->sender,
-            'message'  => $message,
-            'ref'      => $ref,
-        ];
+        $response = $this->sendMany(
+            [$to],
+            $message,
+            $sender,
+            $ref,
+            $split,
+            $delay
+        )[0];
 
-        if ($split) {
-            $request['maxsplit'] = self::MESSAGE_MAX_SPLIT;
-        }
-
-        if ($delay) {
-            $request['delay'] = $delay;
-        }
-
-        $this->validateSendRequest($request);
-
-        try {
-            $response = $this->client->get(self::API_ENDPOINT, [
-                RequestOptions::QUERY => $request,
-            ]);
-        } catch (RequestException $exception) {
-            throw new SendException(sprintf('Failed to send SMS: %s', (string) $exception));
-        }
-
-        $sendResponse = SendResponse::fromResponse((string) $response->getBody());
-
-        if ($sendResponse->hasError()) {
+        if ($response->hasError()) {
             throw new SendException(sprintf(
                     'Failed to send message to `%s` with error `%s`',
-                    $sendResponse->getTo(),
-                    $sendResponse->getError())
+                    $response->getTo(),
+                    $response->getError())
             );
         }
 
-        return $sendResponse;
-    }
-
-    private function validateSendRequest(array $request)
-    {
-        if (!preg_match(self::VALID_SENDER_REGEX, $request['from'])) {
-            throw new InvalidSenderException(sprintf('Message sender `%s` is invalid', $request['from']));
-        }
-
-        if (!preg_match(self::VALID_NUMBER_REGEX, $request['to'])) {
-            throw new InvalidNumberException(sprintf('Message to number `%s` is invalid', $request['to']));
-        }
-
-        $maxLength = $request['maxsplit'] ? self::MESSAGE_MAX_LENGTH_SPLIT : self::MESSAGE_MAX_LENGTH_STANDARD;
-
-        if (strlen($request['message']) === 0) {
-            throw new InvalidMessageException('Message is empty');
-        }
-
-        if (strlen($request['message']) > $maxLength) {
-            throw new InvalidMessageException(sprintf(
-                'Message length `%s` of chars is over maximum length of `%s` chars',
-                strlen($request['message']),
-                $maxLength
-            ));
-        }
+        return $response;
     }
 }

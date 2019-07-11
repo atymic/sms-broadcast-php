@@ -14,13 +14,18 @@ composer require atymic/sms-broadcast
 
 ## Usage
 
+# Creating the client
+
 ```php
 $client = \Atymic\SmsBroadcast\Factory\ClientFactory::create(
     'username',
     'password',
     '0412345678' // Default sender, optional
 );
+```
 
+# Sending a message to a single recipient
+```php
 try {
     $response = $client->send('0487654321', 'This is an sms message');
 } catch (\Atymic\SmsBroadcast\Exception\SmsBroadcastException $e) {
@@ -28,6 +33,18 @@ try {
 }
 
 echo 'SMS sent, ref: ' . $response->getSmsRef();
+```
+
+# Sending a message to a multiple recipients
+```php
+$to = ['0487654321', '0487654322', '0487654323']
+$responses = $client->sendMultiple($to, 'This is an sms message');
+
+foreach ($responses as $response) {
+    echo $response->hasError()
+        ? 'Failed to send SMS: ' . $response->getError()
+        : 'SMS sent, ref: ' . $response->getSmsRef();
+}
 ```
 
 ## Tests
