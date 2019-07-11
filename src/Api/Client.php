@@ -13,6 +13,7 @@ class Client
 {
     /**
      * @see https://www.smsbroadcast.com.au/Advanced%20HTTP%20API.pdf
+     *
      * @var string
      */
     const API_ENDPOINT = 'https://api.smsbroadcast.com.au/api-adv.php';
@@ -48,12 +49,12 @@ class Client
      * @param bool        $split
      * @param int|null    $delay
      *
-     * @return SendResponse[]
-     *
      * @throws InvalidMessageException
      * @throws InvalidNumberException
      * @throws InvalidSenderException
      * @throws SendException
+     *
+     * @return SendResponse[]
      */
     public function sendMany(
         array $to,
@@ -89,12 +90,12 @@ class Client
      * @param bool        $split
      * @param int|null    $delay
      *
-     * @return SendResponse
-     *
      * @throws InvalidMessageException
      * @throws InvalidNumberException
      * @throws InvalidSenderException
      * @throws SendException
+     *
+     * @return SendResponse
      */
     public function send(
         string $to,

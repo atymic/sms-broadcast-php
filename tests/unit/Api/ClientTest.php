@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Atymic\SmsBroadcast\Tests\Unit\Api;
@@ -26,7 +27,6 @@ class ClientTest extends TestCase
 
         $http = $this->guzzler->getClient();
         $this->client = new Client($http, 'user', 'password', '0412345678');
-
     }
 
     /**
