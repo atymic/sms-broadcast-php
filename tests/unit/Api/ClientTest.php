@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Atymic\SmsBroadcast\Tests\Unit\Api;
@@ -26,7 +27,6 @@ class ClientTest extends TestCase
 
         $http = $this->guzzler->getClient();
         $this->client = new Client($http, 'user', 'password', '0412345678');
-
     }
 
     /**
@@ -52,7 +52,7 @@ class ClientTest extends TestCase
                     'test message',
                 ],
                 'exception' => InvalidNumberException::class,
-                'message' => 'Message to number `` is invalid',
+                'message'   => 'Message to number `` is invalid',
             ],
             'invalid to number' => [
                 'args' => [
@@ -60,7 +60,7 @@ class ClientTest extends TestCase
                     'test message',
                 ],
                 'exception' => InvalidNumberException::class,
-                'message' => 'Message to number `041234567` is invalid',
+                'message'   => 'Message to number `041234567` is invalid',
             ],
             'empty message' => [
                 'args' => [
@@ -68,7 +68,7 @@ class ClientTest extends TestCase
                     '',
                 ],
                 'exception' => InvalidMessageException::class,
-                'message' => 'Message is empty',
+                'message'   => 'Message is empty',
             ],
             'message too long' => [
                 'args' => [
@@ -76,7 +76,7 @@ class ClientTest extends TestCase
                     str_repeat('test ', 200),
                 ],
                 'exception' => InvalidMessageException::class,
-                'message' => 'Message length `1000` of chars is over maximum length of `765` chars',
+                'message'   => 'Message length `1000` of chars is over maximum length of `765` chars',
             ],
             'invalid sender' => [
                 'args' => [
@@ -96,10 +96,10 @@ class ClientTest extends TestCase
             ->withQuery([
                 'username' => 'user',
                 'password' => 'password',
-                'to' => '0412345678',
-                'from' => '0412345678',
-                'message' => 'test message',
-                'ref' => 'ref234',
+                'to'       => '0412345678',
+                'from'     => '0412345678',
+                'message'  => 'test message',
+                'ref'      => 'ref234',
                 'maxsplit' => 5,
             ], true)
             ->willRespond(new Response(200, [], 'OK: 61412345678:ref234 '));
@@ -138,9 +138,9 @@ class ClientTest extends TestCase
             ->withQuery([
                 'username' => 'user',
                 'password' => 'password',
-                'to' => '0412345678,0413345678,0414345678',
-                'from' => '0412345678',
-                'message' => 'test message',
+                'to'       => '0412345678,0413345678,0414345678',
+                'from'     => '0412345678',
+                'message'  => 'test message',
                 'maxsplit' => 5,
             ], true)
             ->willRespond(new Response(200, [], "OK: 0412345678:abcd1\nOK: 0413345678:abcd2\nOK: 0414345678:abcd3\n"));

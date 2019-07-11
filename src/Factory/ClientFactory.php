@@ -11,7 +11,7 @@ abstract class ClientFactory
     {
         return new Client(
             new \GuzzleHttp\Client([
-                RequestOptions::TIMEOUT => 5,
+                RequestOptions::TIMEOUT         => 5,
                 RequestOptions::CONNECT_TIMEOUT => 5,
             ]),
             $username,

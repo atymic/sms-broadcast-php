@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Atymic\SmsBroadcast\Api;
@@ -10,7 +11,8 @@ use Atymic\SmsBroadcast\Exception\InvalidSenderException;
 class SendRequest
 {
     /**
-     * SMS Broadcast supports only australian mobile phone numbers
+     * SMS Broadcast supports only australian mobile phone numbers.
+     *
      * @var string
      */
     const VALID_NUMBER_REGEX = '/^(?:614|04|4)[\d]{8}$/';
@@ -95,10 +97,10 @@ class SendRequest
     public function toRequest(): array
     {
         $request = [
-            'to' => implode(',', $this->to),
-            'from' => $this->sender,
+            'to'      => implode(',', $this->to),
+            'from'    => $this->sender,
             'message' => $this->message,
-            'ref' => $this->ref,
+            'ref'     => $this->ref,
         ];
 
         if ($this->split) {
