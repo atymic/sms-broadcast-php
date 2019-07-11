@@ -69,7 +69,15 @@ class SendResponse
         return $this->error;
     }
 
-    public static function fromResponse(string $response)
+    public static function fromResponse(string $response): array
+    {
+        $lines = preg_split('/\r\n|\n|\r/', $response);
+        $lines = array_filter($lines);
+
+        return array_map([self::class, 'parseResponseLine'], $lines);
+    }
+
+    private static function parseResponseLine(string $response)
     {
         $split = explode(self::RESPONSE_SPLIT_DELIMITER, $response);
         $code = trim($split[0]);

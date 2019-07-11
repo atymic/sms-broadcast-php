@@ -33,4 +33,12 @@ class ClientIntegrationTest extends TestCase
         $this->assertFalse($res->hasError());
         $this->assertIsString($res->getSmsRef());
     }
+
+    public function testSendMultiple()
+    {
+        $res = $this->client->sendMany([$this->toNumber, $this->toNumber], 'test message!', 'iamsender');
+
+        $this->assertContainsOnlyInstancesOf(SendResponse::class, $res);
+        $this->assertCount(2, $res);
+    }
 }
