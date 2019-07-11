@@ -1,5 +1,5 @@
 # SmsBroadcast PHP API Client
-[![Build Status](https://travis-ci.org/atymic/sms-broadcast-php.svg?branch=master)](https://travis-ci.org/atymic/sms-broadcast-php) [![Latest Stable Version](https://poser.pugx.org/atymic/sms-broadcast/v/stable)](https://packagist.org/packages/atymic/sms-broadcast) [![License](https://poser.pugx.org/atymic/sms-broadcast/license)](https://packagist.org/packages/atymic/sms-broadcast)
+[![Build Status](https://travis-ci.org/atymic/sms-broadcast-php.svg?branch=master)](https://travis-ci.org/atymic/sms-broadcast-php) [![StyleCI](https://github.styleci.io/repos/190493163/shield?branch=master)](https://github.styleci.io/repos/190493163) [![Latest Stable Version](https://poser.pugx.org/atymic/sms-broadcast/v/stable)](https://packagist.org/packages/atymic/sms-broadcast) [![License](https://poser.pugx.org/atymic/sms-broadcast/license)](https://packagist.org/packages/atymic/sms-broadcast)
 
 This is a simple API client for [SMS Broadcast](https://www.smsbroadcast.com.au/).
 
@@ -14,7 +14,7 @@ composer require atymic/sms-broadcast
 
 ## Usage
 
-# Creating the client
+### Creating the client
 
 ```php
 $client = \Atymic\SmsBroadcast\Factory\ClientFactory::create(
@@ -24,7 +24,7 @@ $client = \Atymic\SmsBroadcast\Factory\ClientFactory::create(
 );
 ```
 
-# Sending a message to a single recipient
+### Sending a message to a single recipient
 ```php
 try {
     $response = $client->send('0487654321', 'This is an sms message');
@@ -35,7 +35,7 @@ try {
 echo 'SMS sent, ref: ' . $response->getSmsRef();
 ```
 
-# Sending a message to a multiple recipients
+### Sending a message to a multiple recipients
 ```php
 $to = ['0487654321', '0487654322', '0487654323']
 $responses = $client->sendMultiple($to, 'This is an sms message');
