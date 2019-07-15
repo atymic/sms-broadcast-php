@@ -168,7 +168,7 @@ class ClientTest extends TestCase
                 'username' => 'user',
                 'password' => 'password',
             ], true)
-            ->willRespond(new Response(200, [], "OK: 3321"));
+            ->willRespond(new Response(200, [], 'OK: 3321'));
 
         $bal = $this->client->getBalance();
 
@@ -186,7 +186,7 @@ class ClientTest extends TestCase
                 'username' => 'user',
                 'password' => 'password',
             ], true)
-            ->willRespond(new Response(200, [], "ERROR: Unknown Error"));
+            ->willRespond(new Response(200, [], 'ERROR: Unknown Error'));
 
         $this->client->getBalance();
     }
