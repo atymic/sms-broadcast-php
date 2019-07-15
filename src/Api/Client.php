@@ -52,12 +52,12 @@ class Client
      * @param bool        $split
      * @param int|null    $delay
      *
-     * @return SendResponse[]
      * @throws InvalidMessageException
      * @throws InvalidNumberException
      * @throws InvalidSenderException
      * @throws SendException
      *
+     * @return SendResponse[]
      */
     public function sendMany(
         array $to,
@@ -93,12 +93,12 @@ class Client
      * @param bool        $split
      * @param int|null    $delay
      *
-     * @return SendResponse
      * @throws InvalidMessageException
      * @throws InvalidNumberException
      * @throws InvalidSenderException
      * @throws SendException
      *
+     * @return SendResponse
      */
     public function send(
         string $to,
@@ -129,10 +129,11 @@ class Client
     }
 
     /**
-     * Get credit balance of the account
+     * Get credit balance of the account.
+     *
+     * @throws SmsBroadcastException
      *
      * @return int
-     * @throws SmsBroadcastException
      */
     public function getBalance(): int
     {
@@ -149,14 +150,14 @@ class Client
         }
 
         return $this->parseBalanceResponse((string) $response->getBody());
-
     }
 
     /**
      * @param string $content
      *
-     * @return int
      * @throws SmsBroadcastException
+     *
+     * @return int
      */
     private function parseBalanceResponse(string $content): int
     {
