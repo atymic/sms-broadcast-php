@@ -42,4 +42,11 @@ class ClientIntegrationTest extends TestCase
         $this->assertContainsOnlyInstancesOf(SendResponse::class, $res);
         $this->assertCount(2, $res);
     }
+
+    public function testGetBalance()
+    {
+        $bal = $this->client->getBalance();
+
+        $this->assertIsInt($bal);
+    }
 }

@@ -10,6 +10,7 @@ use Atymic\SmsBroadcast\Exception\InvalidMessageException;
 use Atymic\SmsBroadcast\Exception\InvalidNumberException;
 use Atymic\SmsBroadcast\Exception\InvalidSenderException;
 use Atymic\SmsBroadcast\Exception\SendException;
+use Atymic\SmsBroadcast\Exception\SmsBroadcastException;
 use BlastCloud\Guzzler\UsesGuzzler;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
@@ -156,5 +157,37 @@ class ClientTest extends TestCase
 
         $this->assertContainsOnlyInstancesOf(SendResponse::class, $results);
         $this->assertCount(3, $results);
+    }
+
+    public function testGetBalanceSuccess()
+    {
+        $this->guzzler->expects($this->once())
+            ->get(Client::API_ENDPOINT)
+            ->withQuery([
+                'action' => 'balance',
+                'username' => 'user',
+                'password' => 'password',
+            ], true)
+            ->willRespond(new Response(200, [], 'OK: 3321'));
+
+        $bal = $this->client->getBalance();
+
+        $this->assertSame(3321, $bal);
+    }
+
+    public function testGetBalanceFailure()
+    {
+        $this->expectException(SmsBroadcastException::class);
+
+        $this->guzzler->expects($this->once())
+            ->get(Client::API_ENDPOINT)
+            ->withQuery([
+                'action' => 'balance',
+                'username' => 'user',
+                'password' => 'password',
+            ], true)
+            ->willRespond(new Response(200, [], 'ERROR: Unknown Error'));
+
+        $this->client->getBalance();
     }
 }

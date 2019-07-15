@@ -47,6 +47,12 @@ foreach ($responses as $response) {
 }
 ```
 
+
+### Check SMS credit balance
+```php
+echo $client->getBalance(); // int(1222)
+```
+
 ## Tests
 By default only unit tests will run. If you want to run the integration tests, copy the `phpunit.dist.xml` file to `phpunit.xml` and supply your SMS Broadcast credentials & to number in the file.
 
