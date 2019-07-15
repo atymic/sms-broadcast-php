@@ -6,6 +6,7 @@ use Atymic\SmsBroadcast\Exception\InvalidMessageException;
 use Atymic\SmsBroadcast\Exception\InvalidNumberException;
 use Atymic\SmsBroadcast\Exception\InvalidSenderException;
 use Atymic\SmsBroadcast\Exception\SendException;
+use Atymic\SmsBroadcast\Exception\SmsBroadcastException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\RequestOptions;
 
@@ -17,6 +18,8 @@ class Client
      * @var string
      */
     const API_ENDPOINT = 'https://api.smsbroadcast.com.au/api-adv.php';
+
+    const ACTION_BALANCE = 'balance';
 
     /** @var \GuzzleHttp\Client */
     private $client;
@@ -49,12 +52,12 @@ class Client
      * @param bool        $split
      * @param int|null    $delay
      *
+     * @return SendResponse[]
      * @throws InvalidMessageException
      * @throws InvalidNumberException
      * @throws InvalidSenderException
      * @throws SendException
      *
-     * @return SendResponse[]
      */
     public function sendMany(
         array $to,
@@ -90,12 +93,12 @@ class Client
      * @param bool        $split
      * @param int|null    $delay
      *
+     * @return SendResponse
      * @throws InvalidMessageException
      * @throws InvalidNumberException
      * @throws InvalidSenderException
      * @throws SendException
      *
-     * @return SendResponse
      */
     public function send(
         string $to,
@@ -123,5 +126,44 @@ class Client
         }
 
         return $response;
+    }
+
+    /**
+     * Get credit balance of the account
+     *
+     * @return int
+     * @throws SmsBroadcastException
+     */
+    public function getBalance(): int
+    {
+        try {
+            $response = $this->client->get(self::API_ENDPOINT, [
+                RequestOptions::QUERY => [
+                    'action' => self::ACTION_BALANCE,
+                    'username' => $this->username,
+                    'password' => $this->password,
+                ],
+            ]);
+        } catch (RequestException $exception) {
+            throw new SmsBroadcastException(sprintf('Failed to fetch balance: %s', (string) $exception));
+        }
+
+        return $this->parseBalanceResponse((string) $response->getBody());
+
+    }
+
+    /**
+     * @param string $content
+     *
+     * @return int
+     * @throws SmsBroadcastException
+     */
+    private function parseBalanceResponse(string $content): int
+    {
+        if (strpos($content, SendResponse::RESPONSE_CODE_ERROR) !== false) {
+            throw new SmsBroadcastException(sprintf('Failed to fetch balance: %s', $content));
+        }
+
+        return (int) trim(explode(':', $content)[1]);
     }
 }
